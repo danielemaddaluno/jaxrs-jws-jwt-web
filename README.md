@@ -29,7 +29,7 @@ This image explain how a JSON Web Token works:
  ![auth_post_3](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/auth_post_3.png)
 
  5. Now invoke `http://localhost:8080/jaxrs-jws-jwt-web/rest-api/test/1` with a 
- `DELETE`, and `Content-Type` set to `application/json` add a new `Header` of type `Authorization` and fill it with the text `Beaver ` + `the previous JSON Web Token` and send the request.
+ `DELETE`, and `Content-Type` set to `application/json` add a new `Header` of type `Authorization` and fill it with the text `Bearer ` + `the previous JSON Web Token` and send the request.
  The response should be something like this.
 ![auth_delete](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/auth_delete.png)
 

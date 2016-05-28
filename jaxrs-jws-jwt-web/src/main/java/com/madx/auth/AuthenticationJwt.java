@@ -34,10 +34,6 @@ public class AuthenticationJwt implements Authentication {
 			// Issue a token for the user
 			String token = issueToken(username);
 
-			// Return the token on the response
-			//			return Response.ok(sctx.getUserPrincipal().getName() + " authenticated")
-			//		                .header("jwt", token)
-			//		                .build();
 			return Response.ok(username + " authenticated")
 					.header("jwt", token)
 					.build();
@@ -60,8 +56,6 @@ public class AuthenticationJwt implements Authentication {
 	 * @return
 	 */
 	private String issueToken(String username) {
-		//		System.out.println("Authenticated user: " + username);
-		//      String authenticatedUser = sctx.getUserPrincipal().getName();
 		return JavaWebTokenUtility.buildJWT(username);
 	}
 
