@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+
+<f:view renderKitId="PRIMEFACES_MOBILE" />
+     
+    <h:head>
+    </h:head>
+     
+    <h:body>
+    
+        <pm:page id="first">
+            <pm:header title="Page 1" swatch="b">
+            </pm:header>
+            <pm:content>
+                <h:form>
+                    <p:button outcome="pm:second?transition=slide" value="Go Button" />
+                    <p:button outcome="index" value="Same Domain" />
+                </h:form>
+            </pm:content>
+        </pm:page>
+ 
+        <pm:page id="second">
+            <pm:header title="Page 2" swatch="b">
+            	<p:button outcome="pm:first?transition=slide&amp;reverse=true" value="Back" icon="ui-icon-arrow-l" styleClass="ui-btn-left ui-btn-inline"/>
+            </pm:header>
+            <pm:content>
+                <p>Page 2 content.</p>
+                <p:button outcome="pm:first" value="Go Back" />
+		</pm:content>
+        </pm:page>
+    </h:body>
+     
+</html>

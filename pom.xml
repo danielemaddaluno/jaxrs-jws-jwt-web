@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<name>Jaxrs-jws-jwt</name>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.madx</groupId>
+	<artifactId>jaxrs-jws-jwt</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>jaxrs-jws-jwt-ear</module>
+		<module>jaxrs-jws-jwt-web</module>
+	</modules>
+
+	<properties>
+		<!-- java and maven-compiler-plugin -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+		<java.version>1.8</java.version>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
+		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+
+		<!-- ear ejb war plugin versions -->
+		<version.ear.plugin>2.10.1</version.ear.plugin>
+		<version.ejb.plugin>2.5.1</version.ejb.plugin>
+		<version.war.plugin>2.6</version.war.plugin>
+
+		<!-- other plugin versions -->
+		<aspectj.version>1.8.9</aspectj.version>
+		<junit.version>4.12</junit.version>
+		<roo.version>2.0.0.M1</roo.version>
+		<slf4j.version>1.7.12</slf4j.version>
+		<spring.version>4.2.1.RELEASE</spring.version>
+		<mysql-connector.version>5.1.38</mysql-connector.version>
+		<mybatis.version>3.4.0</mybatis.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven.compiler.plugin.version}</version>
+					<configuration>
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+						<!-- IMPORTANT -->
+						<useIncrementalCompilation>false</useIncrementalCompilation>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>aspectj-maven-plugin</artifactId>
+					<version>1.8</version>
+					<configuration>
+						<!--<showWeaveInfo>true</showWeaveInfo> -->
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+						<Xlint>ignore</Xlint>
+						<complianceLevel>${java.version}</complianceLevel>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<!--<verbose>true</verbose> -->
+						<!--<warn>constructorName,packageDefaultMethod,deprecation,maskedCatchBlocks,unusedLocals,unusedArguments,unusedImport</warn> -->
+					</configuration>
+					<executions>
+						<execution>
+							<!-- IMPORTANT -->
+							<phase>process-sources</phase>
+							<goals>
+								<goal>compile</goal>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjtools</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.4.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven.dependency.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>install</id>
+							<phase>install</phase>
+							<goals>
+								<goal>sources</goal>
+							</goals>
+						</execution>
+						<execution>
+							<phase>validate</phase>
+							<goals>
+								<goal>copy</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${endorsed.dir}</outputDirectory>
+								<silent>true</silent>
+								<artifactItems>
+									<artifactItem>
+										<groupId>javax</groupId>
+										<artifactId>javaee-endorsed-api</artifactId>
+										<version>7.0</version>
+										<type>jar</type>
+									</artifactItem>
+								</artifactItems>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- I contenitori ear dovranno avere dentro questo -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-ear-plugin</artifactId>
+					<version>${version.ear.plugin}</version>
+					<configuration>
+						<!-- Tell Maven we are using Java EE 7 -->
+						<version>7</version>
+						<!-- Use Java EE ear libraries as needed. Java EE ear libraries are 
+							in easy way to package any libraries needed in the ear, and automatically 
+							have any modules (EJB-JARs and WARs) use them -->
+						<defaultLibBundleDir>lib</defaultLibBundleDir>
+						<fileNameMapping>no-version</fileNameMapping>
+					</configuration>
+				</plugin>
+
+				<!-- I progetti war dovranno avere dentro questo plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${version.war.plugin}</version>
+					<configuration>
+						<!-- Java EE 7 doesn't require web.xml, Maven needs to catch up! -->
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+					</configuration>
+				</plugin>
+
+				<!-- I progetti ejb dovranno avere dentro questo -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-ejb-plugin</artifactId>
+					<version>${version.ejb.plugin}</version>
+					<configuration>
+						<!-- Tell Maven we are using EJB 3.1 -->
+						<ejbVersion>3.1</ejbVersion>
+						<generateClient>true</generateClient>
+						<clientIncludes>
+							<clientInclude>/com/**</clientInclude>
+						</clientIncludes>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>
