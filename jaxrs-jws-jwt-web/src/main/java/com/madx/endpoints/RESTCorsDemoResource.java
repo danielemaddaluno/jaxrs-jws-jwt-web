@@ -4,7 +4,6 @@ import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 
@@ -50,23 +49,6 @@ public class RESTCorsDemoResource implements RESTCorsDemoResourceProxy {
 		JsonObject jsonObj = jsonObjBuilder.build();
 
 		return Response.status( Response.Status.ACCEPTED ).entity( jsonObj.toString() ).build();
-	}
-
-
-	/**
-	 * http://localhost:8080/nights-web/rest-api/rest-cors-demo/home/
-	 */
-	@Override
-	public String home(HttpServletRequest request) {
-		//		String name = "World";
-		//
-		//		Account account = AccountResolver.INSTANCE.getAccount(request);
-		//		if (account != null) {
-		//			name = account.getGivenName();
-		//		}
-		//
-		//		return "Hello " + name + "!";
-		return "";
 	}
 
 }
