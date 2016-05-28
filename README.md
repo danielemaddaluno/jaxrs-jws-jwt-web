@@ -1,7 +1,34 @@
-Many thanks to Cássio Mazzochi Molin which guided me trought this simple project example.
-See http://cassiomolin.com/token-based-authentication-with-jax-rs-2-0/ and http://stackoverflow.com/questions/26777083/best-practice-for-rest-token-based-authentication-with-jax-rs-and-jersey/26778123#26778123
+Credits to Cássio Mazzochi Molin whose stackoverflow response has helped me to structure this simple example project.
+See more in:
+ 1. [Token-based authentication with JAX-RS 2.0](http://cassiomolin.com/token-based-authentication-with-jax-rs-2-0/)
+ 2. [StackOverflow Response](http://stackoverflow.com/questions/26777083/best-practice-for-rest-token-based-authentication-with-jax-rs-and-jersey/26778123#26778123)
+ 3. [JSON Web Token in action with JAX-RS](https://abhirockzz.wordpress.com/2016/03/18/json-web-token-in-action-with-jax-rs/)
+ 4. [JAX-RS Security using JSON Web Tokens (JWT) for Authentication and Authorization](https://avaldes.com/jax-rs-security-using-json-web-tokens-jwt-for-authentication-and-authorization/)
 
-Here I explain how to use this sample, and below there a detailed explanation of how it works (credits to Cássio Mazzochi Molin).
+Here below I explain how to test this sample, and then there a detailed explanation of how it works (credits to Cássio Mazzochi Molin [response](http://stackoverflow.com/questions/26777083/best-practice-for-rest-token-based-authentication-with-jax-rs-and-jersey/26778123#26778123)).
+
+This image explain how a JWT works:
+![JWT_AUTH_FLOW](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/jwt_auth_flow.png)
+
+ 1. Firstly invoke `http://localhost:8080/jaxrs-jws-jwt-web/rest-api/auth/auth` with a 
+ `POST` and `Content-Type` set to `application/json`, 
+ finally fill the body with a json like this `{"username":"client_username", "password":"client_password"}` 
+ using postman you should have something like this:
+ ![auth_post_1](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/auth_post_1.png)
+ 
+ 2. Sending the `POST` request you should get a result like this:
+ ![auth_post_2](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/auth_post_2.png)
+ 
+ 3. If you're using postman and switch the view to `Headers` you could see the server-side generated `JSON Web Token` that the client could now use until the expiring time to invoke secured endopoints.
+ Copy that value (in the sceenshot I highlighted the one that I copied) in the clipboard.
+ ![auth_post_3](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/auth_post_3.png)
+
+ 4. Now invoke `http://localhost:8080/jaxrs-jws-jwt-web/rest-api/test/1` with a 
+ `DELETE`, and `Content-Type` set to `application/json` add a new `Header` of type `Authorization` and fill it with the text `Beaver ` + `the previous JSON Web Token` and send the request.
+ The response should be something like this.
+![auth_delete](https://raw.githubusercontent.com/danielemaddaluno/jaxrs-jws-jwt-web/master/images/auth_delete.png)
+
+
 
 How token-based authentication works
 -
@@ -122,8 +149,8 @@ JAX-RS provides [`@NameBinding`][5], a meta-annotation used to create name-bindi
 
 ```
 @NameBinding
-@Retention(RUNTIME)
-@Target({TYPE, METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Secured { }
 ```
 
@@ -139,8 +166,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 
 		// Get the HTTP Authorization header from the request
-		String authorizationHeader = 
-				requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+		String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
 		// Check if the HTTP Authorization header is present and formatted correctly 
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -156,8 +182,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			validateToken(token);
 
 		} catch (Exception e) {
-			requestContext.abortWith(
-					Response.status(Response.Status.UNAUTHORIZED).build());
+			requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
 		}
 	}
 
@@ -256,12 +281,14 @@ Inject a proxy of the [`SecurityContext`][8] in any REST endpoint class:
 ``` java
 @Context
 SecurityContext securityContext;
+```
+
 
 The same can be done in a method:
-
-	@GET
-	@Secured
-	@Path("{id}")
+``` java
+@GET
+@Secured
+@Path("{id}")
 @Produces("application/json")
 public Response myMethod(@PathParam("id") Long id, 
 		@Context SecurityContext securityContext) {
@@ -282,8 +309,8 @@ Create a CDI qualifier which will be used when handling the authentication event
 
 ``` java
 @Qualifier
-@Retention(RUNTIME)
-@Target({ METHOD, FIELD, PARAMETER })
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 public @interface AuthenticatedUser { }
 ```
 
@@ -355,8 +382,8 @@ Change the `@Secured` name binding annotation created above to support roles:
 
 ``` java
 @NameBinding
-@Retention(RUNTIME)
-@Target({TYPE, METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Secured {
 	Role[] value() default {};
 }

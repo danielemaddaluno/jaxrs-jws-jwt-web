@@ -21,4 +21,5 @@ public class MyEndpoint implements IEndpoint{
     public Response mySecuredMethod(@PathParam("id") Long id) {
     	return Response.ok("secure" + sctx.getUserPrincipal().getName()).build();
     }
+
 }
